@@ -1,0 +1,27 @@
+1. File Processing and Reporing :
+
+import csv
+
+csv_file = "file.csv"
+csv_outfile = "user_totals.csv"
+outdict = []
+
+##transacƟon_id,user_id,amount,transacƟon_date
+##Reading through the input csv
+with open(csv_file) as f:
+    for r in csv.DictReader(f):
+        if outdict is None:
+            outdict[int(r["user_id"])] = int(r["amount"])
+        
+        for key, value in outdict.items():
+            if key == int(r["user_id"]):
+                value += int(r["amount"])
+            else:
+                outdict[int(r["user_id"])] = int(r["amount"])
+                
+##Writing onto output csv
+with open(csv_outfile, 'w', newline = '') as outfile:
+    writer = csv.writer(csvfile)
+    writer.writerows(outdict)
+
+
