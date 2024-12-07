@@ -1,0 +1,23 @@
+import requests
+import json
+
+api_key = "key_api"
+url = "https://api.openweathermap.org/data/2.5/weather?"
+city_name = input("Enter city Name : ")
+complete_url = url + "appid= " + api_key + "&q= " + city_name
+
+response = requests.get(complete_url)
+
+resjson = response.json()
+
+if resjson["cod"] != "404":
+    tmpjson = resjson["main"]
+    
+    cur_temp = tmpjson["temp"]
+    cur_humidity = tmpjson["humidity"]
+    
+    out = {'City': city_name, 'Temperature': str(cur_temp), 'Humidity': str(cur_humidity)}
+    print(json.dumps(out))
+    
+else:
+    print("City Not Found")
