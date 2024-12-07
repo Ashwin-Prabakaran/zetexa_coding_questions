@@ -1,0 +1,25 @@
+import logging
+
+request_logger = logging.getLogger('api.request.logger')
+
+class LoggingMiddleware(object):
+    init_http_body = None
+    
+    def process_request(self, request):
+        self.init_http_body = request.body
+        
+    def process_response(self, request, response):
+        if request.path.startswith('/api/') and \
+        (request.method == "POST" and request.META.get('CONTENT_Type') == 'application/json') or request.method == "GET"):
+            request_logger.log(logging.Debug, "GET: {}. body: {} response code: {}."
+                "response"
+                "content: {}".format(request.GET, self.init_http_body, response.status_code, response.content))
+        return response
+    
+LM = LoggingMiddleware()
+LM.process_request(request)
+response = LM.process_response(request, response)
+
+with open("requests_logs.txt", 'w+') as rlf:
+    rlf.write_lines(response)
+    close()
