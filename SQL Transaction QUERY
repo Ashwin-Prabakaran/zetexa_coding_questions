@@ -1,0 +1,4 @@
+SELECT users.user_id, users.name FROM users
+JOIN orders ON users.user_id = orders.user_id
+WHERE orders.total_amount >= "10000"
+GROUP BY  users.user_id, users.name Having SUM(orders.Order_id) > 5
