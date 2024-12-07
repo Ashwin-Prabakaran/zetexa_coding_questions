@@ -1,0 +1,55 @@
+'''
+Users: user_id, name, email. 
+Posts: post_id, user_id, Ɵtle, content, created_at. 
+Comments: comment_id, post_id, user_id, comment_text, created_at. 
+'''
+CREATE SCHEMA 'BLOG' DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE 'BLOG'.'Post' (
+    'PostId' INT ,
+    'Title' VARCHAR(255),
+    'UserId' INT,
+    'Content' TEXT,
+    'Createdat' DATETIME,
+    PRIMARY Key ('PostId')
+);
+
+CREATE TABLE 'BLOG'.'User' (
+    'UserId' INT ,
+    'Username' VARCHAR(255),
+    'EMAIL' VARCHAR(255),
+    PRIMARY KEY ('UserId')
+);
+
+CREATE TABLE 'BLOG'.'Comments'(
+    'Comment_ID' INT,
+    'UserPostId' INT,
+    'UserId' INT,
+    'CommentText' TEXT,
+    'Createat' DATETIME,
+    PRIMARY KEY ('Comment_ID')
+);
+
+
+SQL QUERIES:
+select 
+    Post.PostId,
+    Post.UserId,
+    Post.Createdat,
+    Comments.UserPostId,
+    Comments.CommentText,
+    Comments.Createdat
+    User.UserId,
+    User.Username,
+    COALESCE(A.LikeCNT, 0) num_likes
+    
+FROM Post
+INNER JOIN User ON Post.PostId and User.UserId
+LEFT JOIN(SELECT COUNT(A.UserPostId) LikeCNT, A.UserPostId FROM Comments A WHERE type = "like" GROUP BY A.UserPostId) A ON A.UserPostId = Post.UserId
+LEFT JOIN(
+    SELECT 
+        @row_num := IF(@prev_value=UserPostId,@row_num+1,1) as row_number, commentText, UserPostId, @prev_value := UserPostId
+    FROM Comments CROSS JOIN (SELECT @row_num :=1, @prev_value :='' collate utf8_unicode_ci)
+    WHERE type = 'comment'
+    ORDER BY UserPostId) rcom ON rcom.UserPost = Post.UserId AND rcom.row_number <=5
+ORDER BY posts DESC;
